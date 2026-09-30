@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Information Directory</title>
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,700;1,300&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #f8f9fa;
+            --text-primary: #212529;
+            --text-secondary: #6c757d;
+            --accent-color: #3b82f6;
+            --card-bg: #ffffff;
+            --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 25px rgba(0,0,0,0.15);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        h1, h2, h3 {
+            font-family: 'Merriweather', serif;
+            color: var(--text-primary);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            color: #1a202c;
+        }
+
+        /* View Switching */
+        .view {
+            display: none;
+            animation: fadeIn 0.4s ease-out;
+        }
+        
+        .view.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Grid Layout */
+        .book-grid {
+            display: grid;
+            grid-template-columns: repeat(1, 1fr);
+            gap: 2rem;
+        }
+
+        @media (min-width: 768px) {
+            .book-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .book-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        /* Book Card */
+        .book-card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .book-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .card-image {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            border-bottom: 1px solid #eee;
+        }
+
+        .card-content {
+            padding: 1.5rem;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+            line-height: 1.4;
+        }
+
+        .card-author {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            margin-bottom: 1rem;
+        }
+
+        /* Details View */
+        .details-container {
+            background: var(--card-bg);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            flex-direction: column;
+        }
+
+        @media (min-width: 768px) {
+            .details-container {
+                flex-direction: row;
+            }
+        }
+
+        .details-image {
+            width: 100%;
+            height: 400px;
+            object-fit: cover;
+        }
+
+        @media (min-width: 768px) {
+            .details-image {
+                width: 40%;
+                height: auto;
+                min-height: 500px;
+            }
+        }
+
+        .details-content {
+            padding: 3rem;
+            width: 100%;
+        }
+
+        @media (min-width: 768px) {
+            .details-content {
+                width: 60%;
+            }
+        }
+
+        .btn-back {
+            display: inline-flex;
+            align-items: center;
+            background: none;
+            border: none;
+            color: var(--accent-color);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-bottom: 2rem;
+            transition: var(--transition);
+            padding: 0;
+        }
+
+        .btn-back:hover {
+            color: #2563eb;
+            transform: translateX(-5px);
+        }
+
+        .details-title {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            line-height: 1.2;
+        }
+
+        .details-author {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+            font-style: italic;
+        }
+
+        .meta-info {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .meta-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .meta-label {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-secondary);
+            margin-bottom: 0.25rem;
+        }
+
+        .meta-value {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .details-synopsis {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #4a5568;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Book Directory</h1>
+        <p style="color: var(--text-secondary);">Explore our curated collection of timeless stories.</p>
+    </header>
+
+    <!-- View 1: Book List -->
+    <main id="list-view" class="view active">
+        <div class="book-grid" id="book-grid">
+            <!-- Book cards injected via JS -->
+        </div>
+    </main>
+
+    <!-- View 2: Book Details -->
+    <main id="details-view" class="view">
+        <button class="btn-back" id="btn-back">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+            Back to Home
+        </button>
+        <div class="details-container">
+            <img src="" alt="Book Cover" class="details-image" id="details-image">
+            <div class="details-content">
+                <h2 class="details-title" id="details-title">Title</h2>
+                <div class="details-author" id="details-author">Author</div>
+                
+                <div class="meta-info">
+                    <div class="meta-item">
+                        <span class="meta-label">Genre</span>
+                        <span class="meta-value" id="details-genre">Genre</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">Published</span>
+                        <span class="meta-value" id="details-year">Year</span>
+                    </div>
+                </div>
+
+                <div class="details-synopsis" id="details-synopsis">
+                    Synopsis text here.
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script>
+    // 1. Mock Data
+    const books = [
+        {
+            id: 1,
+            title: "Harry Potter and the Sorcerer's Stone",
+            author: "J.K. Rowling",
+            cover: "https://upload.wikimedia.org/wikipedia/en/6/6b/Harry_Potter_and_the_Philosopher%27s_Stone_Book_Cover.jpg",
+            genre: "Fantasy",
+            year: 1997,
+            synopsis: "An orphaned boy discovers he is a wizard and attends Hogwarts School of Witchcraft and Wizardry, where he uncovers the truth about his parents' deaths and faces the dark wizard Lord Voldemort."
+        },
+        {
+            id: 2,
+            title: "The Fellowship of the Ring",
+            author: "J.R.R. Tolkien",
+            cover: "https://upload.wikimedia.org/wikipedia/en/8/8e/The_Fellowship_of_the_Ring_cover.gif",
+            genre: "High Fantasy",
+            year: 1954,
+            synopsis: "The first volume of The Lord of the Rings, following a diverse fellowship of hobbits, elves, dwarves, and men on a perilous quest to destroy the One Ring and defeat the Dark Lord Sauron."
+        },
+        {
+            id: 3,
+            title: "The Hunger Games",
+            author: "Suzanne Collins",
+            cover: "https://upload.wikimedia.org/wikipedia/en/d/dc/The_Hunger_Games.jpg",
+            genre: "Dystopian / Sci-Fi",
+            year: 2008,
+            synopsis: "In a dystopian future, sixteen-year-old Katniss Everdeen volunteers to take her younger sister's place in a televised fight to the death where only one survivor can emerge victorious."
+        },
+        {
+            id: 4,
+            title: "The Da Vinci Code",
+            author: "Dan Brown",
+            cover: "https://upload.wikimedia.org/wikipedia/en/6/6b/DaVinciCode.jpg",
+            genre: "Mystery / Thriller",
+            year: 2003,
+            synopsis: "Symbologist Robert Langdon and cryptologist Sophie Neveu investigate a murder in the Louvre Museum, uncovering a trail of clues hidden in the works of Leonardo da Vinci that leads to a secret religious society."
+        },
+        {
+            id: 5,
+            title: "Twilight",
+            author: "Stephenie Meyer",
+            cover: "https://upload.wikimedia.org/wikipedia/en/1/1d/Twilightbook.jpg",
+            genre: "Romance / Fantasy",
+            year: 2005,
+            synopsis: "Teenager Bella Swan moves to the rainy town of Forks, Washington, where she meets and falls deeply in love with Edward Cullen, a mysterious boy who turns out to be a vampire."
+        },
+        {
+            id: 6,
+            title: "The Lion, the Witch and the Wardrobe",
+            author: "C.S. Lewis",
+            cover: "https://upload.wikimedia.org/wikipedia/en/8/86/TheLionWitchWardrobe%281stEd%29.jpg",
+            genre: "Children's Fantasy",
+            year: 1950,
+            synopsis: "Four siblings discover a magical wardrobe that transports them to the magical land of Narnia, a world frozen in eternal winter by the evil White Witch, where they must help the great lion Aslan save the land."
+        }
+    ];
+
+    // DOM Elements
+    const listView = document.getElementById('list-view');
+    const detailsView = document.getElementById('details-view');
+    const bookGrid = document.getElementById('book-grid');
+    const btnBack = document.getElementById('btn-back');
+
+    // Details Elements
+    const dImage = document.getElementById('details-image');
+    const dTitle = document.getElementById('details-title');
+    const dAuthor = document.getElementById('details-author');
+    const dGenre = document.getElementById('details-genre');
+    const dYear = document.getElementById('details-year');
+    const dSynopsis = document.getElementById('details-synopsis');
+
+    // 2. Render Book List
+    function renderBooks() {
+        bookGrid.innerHTML = '';
+        books.forEach(book => {
+            const card = document.createElement('div');
+            card.className = 'book-card';
+            card.onclick = () => showDetails(book.id);
+            
+            card.innerHTML = `
+                <img src="${book.cover}" alt="${book.title} Cover" class="card-image">
+                <div class="card-content">
+                    <h3 class="card-title">${book.title}</h3>
+                    <div class="card-author">${book.author}</div>
+                </div>
+            `;
+            bookGrid.appendChild(card);
+        });
+    }
+
+    // 3. Show Details View
+    function showDetails(bookId) {
+        const book = books.find(b => b.id === bookId);
+        if (!book) return;
+
+        // Populate details
+        dImage.src = book.cover;
+        dImage.alt = book.title + ' Cover';
+        dTitle.textContent = book.title;
+        dAuthor.textContent = book.author;
+        dGenre.textContent = book.genre;
+        dYear.textContent = book.year;
+        dSynopsis.textContent = book.synopsis;
+
+        // Switch view
+        listView.classList.remove('active');
+        detailsView.classList.add('active');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Go back to List View
+    btnBack.onclick = () => {
+        detailsView.classList.remove('active');
+        listView.classList.add('active');
+    };
+
+    // Initialize
+    renderBooks();
+</script>
+</body>
+</html>
